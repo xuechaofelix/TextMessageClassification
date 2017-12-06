@@ -1,7 +1,13 @@
 #! /usr/bin/env python3.6
 import math
+InputFileName = "training_result.txt"
+OutputFeature = "feature.txt"
+OutputAllFeature = "all_feature.txt"
+NumOfFeature = 10000#特征取前10000个
 
-training_file = open("training_result.txt")#通过分词后的训练集
+
+########################################################################3
+training_file = open(InputFileName)#通过分词后的训练集
 
 train = []
 for line in training_file:
@@ -12,7 +18,7 @@ word = {}
 docu_num = 0
 docu_1_num =0
 docu_0_num = 0
-for line in train:
+for line in train[0:int(4*len(train)/5)]:
 	docu_num +=1
 	if line[0] == '1':
 		for col in line[1:len(line)-1]:
@@ -33,7 +39,7 @@ for line in train:
 		print("eror")
 N1 = 0.0
 N0 = 0.0
-for line in train:
+for line in train[0:int(4*len(train)/5)]:
 	if line[0] == '0':
 		N0 +=1
 	else:
@@ -49,6 +55,7 @@ for w in word:
 	word[w][3] = docu_0_num - word[w][2]
 E_s = -((N1/(N1+N0))*math.log(N1/(N1+N0)) + (N0/(N1+N0))*math.log(N0/(N1+N0)))
 
+######################################################
 info_gain={}
 num = 0
 for w in word:
@@ -79,16 +86,17 @@ for w in word:
 	
 del word
 
+####################################################################3
 info_gain= sorted(info_gain.items(), key=lambda d:d[1], reverse = True)
 
-result_file = open("feature.txt","w") #取前面的特征
+result_file = open(OutputFeature,"w") #取前面的特征
 
-for k in info_gain[0:10000]:#特征取前10000个
+for k in info_gain[0:NumOfFeature]:
 	result_file.write(str(k)+'\r\n')
 result_file.flush()
 result_file.close()
 
-all_result_file = open("all_feature.txt","w") #所有的特征
+all_result_file = open(OutputAllFeature,"w") #所有的特征
 
 for k in info_gain:
 	all_result_file.write(str(k)+'\r\n')

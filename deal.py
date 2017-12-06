@@ -1,12 +1,16 @@
 #! /usr/bin/env python3.6
 
-training_file = open("training_result.txt")
+InputTrainingFile = "training_result.txt"
+InputFeatureFile = "feature.txt"
+OutPutResultFile = "testing_classify_result.txt"
+
+training_file = open(InputTrainingFile)
 train = []
 for line in training_file:
 	train.append(line.split('|'))
 training_file.close()
 
-feature_file = open("feature.txt")
+feature_file = open(InputFeatureFile)
 feature = []
 for line in feature_file:
 	s = line.split(',')
@@ -60,7 +64,7 @@ for line in testing_file:
 	total +=1
 testing_file.close()
 
-all_result_file = open("testing_classify_result.txt","w")
+all_result_file = open(OutPutResultFile,"w")
 
 current =0
 print("Now Calculating The Testing File....")
