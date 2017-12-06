@@ -1,0 +1,43 @@
+What is the file meaning?
+/Divide : 
+	it is the eclipse project and it can be imported by eclipse. its function is Word segmentation.
+/Divide/IKAnalyzer2012_u6.jar:
+	the tool jar for word segmentation
+/Divide/lucene-core-3.6.0.jar:
+	the tool jar for word segmentation
+/Divide/*_result.txt
+	the output file after word segmentation
+/Message.py : 
+	get the feature from the training text by IG. 
+/all_feature.txt: 
+	The output of the Message.py with all the feature of this text.
+/deal.py: 
+	read the feature and training the training data. Print the Right-Rate and get testing_classify-result.
+/feature.txt: 
+	the feature whose distinction is biggger.
+/testing_classify_result.txt: 
+	the output of the deal.py with the classify result for testing file
+/testing_result.txt: 
+	The output of the Divide project with all the possiable word in the testing file.
+/training_result.txt: 
+	The output of the Divide project with all the possiable word in the training file.
+
+
+Worning: 
+	Default Running Enviroment Is Python 3.6, If You Do Not Have It, Please Delete The First Line In The Python File. i.e. (Del: #! /usr/bin/env python3.6)
+
+
+Waht is the Runing Order?
+
+Note: the every following step is the independent step. You can run any step you want.
+1.Word Segmentation
+ >Import the eclipse, and open the test.java. 
+ >Change the paramter of the FileReader to the name of which text you want to do word segmentation. 
+ >Change the paramter of the FileWrite to the file name you want to output. 
+ >Run 
+
+2.Get Feature
+ >Run message.py
+
+3.Get the Result
+ >Run deal.py
