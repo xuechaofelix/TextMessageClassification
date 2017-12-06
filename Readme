@@ -30,6 +30,7 @@ Worning:
 Waht is the Runing Order?
 
 Note: the every following step is the independent step. You can run any step you want.
+
 1.Word Segmentation
  >Import the eclipse, and open the test.java. 
  >Change the paramter of the FileReader to the name of which text you want to do word segmentation. 
@@ -37,7 +38,20 @@ Note: the every following step is the independent step. You can run any step you
  >Run 
 
 2.Get Feature
+ >Change all the Input and Output file name which is you want to run
+ >Change how many features you want get by the NumOfFeature
  >Run message.py
 
 3.Get the Result
+ >Change all the Input and Output file name which is you want to run 
  >Run deal.py
+
+What is the result of the Running?
+
+>Word Segmentation
+	It get a file which is divided by word segmentation with keeping the original file form.
+>Get Feature
+	Get two files. one are the featrues we want to get with the form of ('word','distinction'). another are all the features of the file with the form of ('word','distinction').
+>Get the Result
+	Print the Right-Rate
+	Get a file which is the testing result with the form 0 or 1 following the roiginal sentence for each line of the tesing file.
