@@ -14,7 +14,7 @@ class Feature:
 			
 		for line in train:
 			docu_num +=1
-			length = len(line)
+			length = len(line)-1
 			if line[0] == '1':
 				
 				for col in line[1:length]:
@@ -60,7 +60,7 @@ class Feature:
 		N1 = docu_1_num
 		N2 = docu_0_num
 		E_s = -((N1/(N1+N0))*math.log(N1/(N1+N0)) + (N0/(N1+N0))*math.log(N0/(N1+N0)))# get the system etropy
-		print(E_s)
+		#print(E_s)
 ##############################################		
 		info_gain={}
 		num = 0
@@ -71,7 +71,9 @@ class Feature:
 			C = word[w][1]# 正例中不出现
 			D = word[w][3]# 负例中不出现
 			#print(A,B,C,D)
-			
+			if A+B+C+D != docu_1_num +docu_0_num :
+				print("error")
+				exit()
 			A_part = (A/(A+B)) * math.log(A/(A+B),2)
 			
 			B_part = (B/(A+B)) * math.log(B/(A+B),2)
@@ -127,8 +129,8 @@ class Deal:
 	OutPutResultFile = "testing_classify_result.txt"
 	OutputFeature = "feature.txt"
 	OutputAllFeature = "all_feature.txt"
-	NumOfFeature = 100#特征取前10000个
-	E_p_base = 0.001 
+	NumOfFeature = 105#特征取前10000个
+	E_p_base = 1.0#0.001 
 	
 
 
@@ -138,6 +140,7 @@ class Deal:
 		for line in training_file:
 			tmp_train.append(line.split('|'))
 		training_file.close()	
+		
 		return tmp_train
 	def GetTestingData(self):
 		testing_file = open(self.InputTestingFile)
@@ -189,14 +192,13 @@ class Deal:
 			for line in tmp_train:
 				if line[0] == '0':
 					
-					for col in line[1:len(line)]:
-						
+					for col in line[1:len(line)-1]:
 						if col in Pfeature :
 							Py_0 +=1
 							Pfeature[col][1] += 1  
 				if line[0] == '1':
 					
-					for col in line[1:len(line)]:
+					for col in line[1:len(line)-1]:
 						
 						if col in Pfeature:
 							Py_1 +=1
@@ -204,7 +206,7 @@ class Deal:
 			
 			#for f in Pfeature:
 				#if(Pfeature[f][0]+Pfeature[f][1] != Py_0+Py_1)
-			print(Py_1+Py_0)
+			#print(Py_1+Py_0)
 			TP = 0.0
 			FP = 0.0
 			TN = 0.0
@@ -216,10 +218,10 @@ class Deal:
 				current_P1 = (Py_1/(Py_0+Py_1))
 				current_P0 = (Py_0/(Py_0+Py_1))
 				for f in Pfeature:
-					if f in line:
+					if f in line[1:len(line)-1]:
 						current_P1 *= Pfeature[f][0]/Py_1
 						current_P0 *= Pfeature[f][1]/Py_0
-				#for col in line[1:len(line)]:
+				#for col in line[1:len(line)-1]:
 					
 					#if col in Pfeature:
 						#current_P1 *= Pfeature[col][0]/Py_1
@@ -273,14 +275,14 @@ class Deal:
 		for line in tmp_train:
 			if line[0] == '0':
 					
-				for col in line[1:len(line)]:
+				for col in line[1:len(line)-1]:
 						
 					if col in Pfeature :
 						Py_0 +=1
 						Pfeature[col][1] += 1  
 			if line[0] == '1':
 					
-				for col in line[1:len(line)]:
+				for col in line[1:len(line)-1]:
 						
 					if col in Pfeature:
 						Py_1 +=1
@@ -292,7 +294,7 @@ class Deal:
 			current_P0 = (Py_0/(Py_0+Py_1))
 			
 			for f in Pfeature:
-				if f in line:
+				if f in line[1:len(line)-1]:
 					current_P1 *= Pfeature[f][0]/Py_1
 					current_P0 *= Pfeature[f][1]/Py_0
 			#for col in line[1:len(line)-1]:
