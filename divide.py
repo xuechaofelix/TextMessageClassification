@@ -8,11 +8,17 @@ def stopwordslist(filepath):
     return stopwords  
 
 def Divide(InputFileName,OutPutFileName):
-	Input_file = open(InputFileName)
+	Input_file = open(InputFileName,'r',encoding = 'utf-8')
 	result_file = open(OutPutFileName,"w")
 	tmp = []
-	for line in Input_file:
-		tmp.append(line)
+	docus = [line for line in Input_file.readlines()] 
+	print(len(docus))
+	num = 0
+	for line in docus:
+		if line.strip() == '':
+			num = num +1
+			print("sss"+str(num))
+	for line in docus:
 		seg_list = jieba.cut(line.strip(), cut_all=True )#
 		stopwords = stopwordslist('stopword.dic')  # 这里加载停用词的路径
 		result = ''
@@ -28,8 +34,11 @@ def Divide(InputFileName,OutPutFileName):
 		result = re.sub('\|\|*','|',result)
 		#result = result[0:len(result)-1]
 		result = result.strip()
-		if result != '' and result != '0' and result != '1':
-			result_file.write(result + '\r\n')
+		if result != '' and result[0] == '|':
+				result = result[1:len(result)]
+		result = result.strip()
+		#if result != '' and result != '0' and result != '1':
+		result_file.write(result + '\n')
 	result_file.flush();
 	result_file.close();
 	Input_file.close()	

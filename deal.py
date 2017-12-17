@@ -72,7 +72,7 @@ class Feature:
 			D = word[w][3]# 负例中不出现
 			#print(A,B,C,D)
 			if A+B+C+D != docu_1_num +docu_0_num :
-				print("error")
+				print("Number Not Equal ---> error")
 				exit()
 			A_part = (A/(A+B)) * math.log(A/(A+B),2)
 			
@@ -83,7 +83,7 @@ class Feature:
 			D_part = (D/(C+D)) * math.log(D/(C+D),2)
 			info_gain[w] = E_s +((A+B)/(N1+N0))*(A_part + B_part) + ((C+D)/(N1+N0))*(C_part + D_part)
 			if(info_gain[w] == 0):
-				print("error")
+				print("Info Gain equal to 0 ---> error")
 				exit()
 			#print("processing is "+str(float(num)/float(total_word)))
 	
@@ -104,7 +104,8 @@ class Feature:
 		all_result_file = open(OutputAllFeature,"w") #所有的特征
 
 		for k in info_gain_sorted:
-			all_result_file.write(str(k)+'\r\n')
+			result = str(k)
+			all_result_file.write(result[1:len(result)-1]+'\r\n')
 		all_result_file.flush()
 		all_result_file.close()
 	
@@ -129,8 +130,8 @@ class Deal:
 	OutPutResultFile = "testing_classify_result.txt"
 	OutputFeature = "feature.txt"
 	OutputAllFeature = "all_feature.txt"
-	NumOfFeature = 105#特征取前10000个
-	E_p_base = 1.0#0.001 
+	NumOfFeature = 10000#特征取前10000个
+	E_p_base = 1.0000000#0.001 
 	
 
 
@@ -215,19 +216,19 @@ class Deal:
 			
 			
 			for line in train[int((i)*len(train)/fold):int((i+1)*len(train)/fold)]:#测试集部分
-				current_P1 = (Py_1/(Py_0+Py_1))
-				current_P0 = (Py_0/(Py_0+Py_1))
+				current_P1 = math.log((Py_1/(Py_0+Py_1)),10)
+				current_P0 = math.log((Py_0/(Py_0+Py_1)),10)
 				for f in Pfeature:
 					if f in line[1:len(line)-1]:
-						current_P1 *= Pfeature[f][0]/Py_1
-						current_P0 *= Pfeature[f][1]/Py_0
+						current_P1 += math.log(Pfeature[f][0]/Py_1,10)
+						current_P0 += math.log(Pfeature[f][1]/Py_0,10)
 				#for col in line[1:len(line)-1]:
 					
 					#if col in Pfeature:
 						#current_P1 *= Pfeature[col][0]/Py_1
 						#current_P0 *= Pfeature[col][1]/Py_0
 				if(current_P1 == 0 or current_P0 ==0):
-					print("error")
+					print("equal to 0 --->error")
 					exit()
 				if (current_P1 >= current_P0 and line[0] == '1'):
 					TN +=1
@@ -322,4 +323,4 @@ class Deal:
 
 util_MessageClassify = Deal()
 util_MessageClassify.Training(5)
-util_MessageClassify.GetResult()
+#util_MessageClassify.GetResult()
