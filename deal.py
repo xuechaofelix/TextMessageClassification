@@ -1,5 +1,7 @@
-#! /usr/bin/env python3.6
+#! /usr/bin/env python
 import math
+#from sklearn.metrics import *
+#import codecs
 
 class Feature:
 	E_p_base = 1.0
@@ -66,10 +68,10 @@ class Feature:
 		num = 0
 		for w in word:
 			num +=1
-			A = word[w][0]# 正例中出现
-			B = word[w][2]# 负例中出现
-			C = word[w][1]# 正例中不出现
-			D = word[w][3]# 负例中不出现
+			A = word[w][0]# 
+			B = word[w][2]# 
+			C = word[w][1]# 
+			D = word[w][3]# 
 			#print(A,B,C,D)
 			if A+B+C+D != docu_1_num +docu_0_num :
 				print("Number Not Equal ---> error")
@@ -94,14 +96,14 @@ class Feature:
 		return info_gain
 
 	def __OutPutFeature(self,info_gain_sorted,Num,OutputFeature,OutputAllFeature):
-		result_file = open(OutputFeature,"w") #取前面的特征
+		result_file = open(OutputFeature,"w") #
 
 		for k in info_gain_sorted[0:Num]:
 			result_file.write(str(k)+'\r\n')
 		result_file.flush()
 		result_file.close()
 
-		all_result_file = open(OutputAllFeature,"w") #所有的特征
+		all_result_file = open(OutputAllFeature,"w") #
 
 		for k in info_gain_sorted:
 			result = str(k)
@@ -130,8 +132,8 @@ class Deal:
 	OutPutResultFile = "testing_classify_result.txt"
 	OutputFeature = "feature.txt"
 	OutputAllFeature = "all_feature.txt"
-	NumOfFeature = 10000#特征取前10000个
-	E_p_base = 1.0000000#0.001 
+	NumOfFeature = 1000#
+	E_p_base = 0.00000001#0.001 
 	
 
 
@@ -139,7 +141,8 @@ class Deal:
 		training_file = open(self.InputTrainingFile)
 		tmp_train = []
 		for line in training_file:
-			tmp_train.append(line.split('|'))
+			tmp_train.append(str(line).split('|'))
+			print(str(line))
 		training_file.close()	
 		
 		return tmp_train
@@ -176,10 +179,10 @@ class Deal:
 			lastPfeature = {}
 			tmp_train =[]
 			#print(len(train))
-			for line in train[0:int((i)*len(train)/fold)]:#训练集前半部分
+			for line in train[0:int((i)*len(train)/fold)]:#
 				tmp_train.append(line)
 
-			for line in train[int((i+1)*len(train)/fold):int((fold)*len(train)/fold)]:#训练集后半部分
+			for line in train[int((i+1)*len(train)/fold):int((fold)*len(train)/fold)]:#
 				tmp_train.append(line)
 			
 			tmp_feature = util_feature.GetFeature(tmp_train,self.NumOfFeature,self.OutputFeature,self.OutputAllFeature)
@@ -214,14 +217,15 @@ class Deal:
 			FN = 0.0
 			print(str(i+1)+"th training is down! \n")
 			
-			
-			for line in train[int((i)*len(train)/fold):int((i+1)*len(train)/fold)]:#测试集部分
+			Evaluation_Result = []
+			Result = []
+			for line in train[int((i)*len(train)/fold):int((i+1)*len(train)/fold)]:#
 				current_P1 = math.log((Py_1/(Py_0+Py_1)),10)
 				current_P0 = math.log((Py_0/(Py_0+Py_1)),10)
 				for f in Pfeature:
 					if f in line[1:len(line)-1]:
-						current_P1 += math.log(Pfeature[f][0]/Py_1,10)
-						current_P0 += math.log(Pfeature[f][1]/Py_0,10)
+						current_P1 += math.log(0.75 * Pfeature[f][0]/Py_1,10)
+						current_P0 += math.log(1.25 * Pfeature[f][1]/Py_0,10)
 				#for col in line[1:len(line)-1]:
 					
 					#if col in Pfeature:
@@ -230,6 +234,15 @@ class Deal:
 				if(current_P1 == 0 or current_P0 ==0):
 					print("equal to 0 --->error")
 					exit()
+				#if current_P1 >= current_P0:
+				#	Evaluation_Result.append(1)
+				#else: 
+				#	Evaluation_Result.append(0)
+				#if line[0] == '1':
+				#	Result.append(1)
+				#elif line[0] == '0':
+				#	Result.append(0)
+				'''
 				if (current_P1 >= current_P0 and line[0] == '1'):
 					TN +=1
 				elif (current_P1 < current_P0 and line[0] == '0'):
@@ -240,6 +253,18 @@ class Deal:
 					FP += 1
 				else:
 					print("error result")
+				'''
+				if (current_P1 >= current_P0 and line[0] == '1'):
+					TP +=1
+				elif (current_P1 < current_P0 and line[0] == '0'):
+					TN += 1
+				elif (current_P1 >= current_P0 and line[0] == '0'):
+					FP += 1
+				elif (current_P1 < current_P0 and line[0] == '1'):
+					FN += 1
+				else:
+					print("error result")
+				
 			#print("Right is"+ str((TP+TN)/(TP+TN+FP+FN)))
 			print("Percision OF "+str(i+1)+"th training is " + str(TP/(TP+FP)))
 			print("Recall OF "+str(i+1)+"th training is " + str(TP/(TP+FN)))
@@ -247,6 +272,8 @@ class Deal:
 			percision += TP/(TP+FP)
 			recall += TP/(TP+FN)
 			F1 += 2*TP/(2*TP+FP+FN)
+			#print("by tool")
+			#print(precision_recall_fscore_support(Result,Evaluation_Result,pos_label = 1))
 		print("Now Get The Final Evaluation Of This Model:")
 		print("percision is " + str(percision/5))
 		print("recall is "+ str(recall/5))

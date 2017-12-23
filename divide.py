@@ -1,34 +1,42 @@
-#! /usr/bin/env python3.6
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 import jieba  
 import re
+import io
 
-# 创建停用词list  
+#  
 def stopwordslist(filepath):  
-    stopwords = [line.strip() for line in open(filepath, 'r', encoding='utf-8').readlines()]  
+    stopwords = [line.strip() for line in io.open(filepath, 'r',encoding = 'utf-8').readlines()]  
     return stopwords  
 
 def Divide(InputFileName,OutPutFileName):
-	Input_file = open(InputFileName,'r',encoding = 'utf-8')
-	result_file = open(OutPutFileName,"w")
+	Input_file = io.open(InputFileName,'r',encoding = 'utf-8')
+	result_file = io.open(OutPutFileName,"w",encoding = 'utf-8')
 	tmp = []
+	#docus = []
+	#for line in Input_file.readlines():
+		#string = str(line)
+		#print(string)
+		#docus.append(str(line))
+
 	docus = [line for line in Input_file.readlines()] 
-	print(len(docus))
 	num = 0
 	for line in docus:
 		if line.strip() == '':
 			num = num +1
 			print("sss"+str(num))
 	for line in docus:
+		#print(line)
 		seg_list = jieba.cut(line.strip(), cut_all=True )#
-		stopwords = stopwordslist('stopword.dic')  # 这里加载停用词的路径
+		#stopwords = stopwordslist('stopword.dic')  # 
 		result = ''
-		for word in seg_list:  
-	        	if word not in stopwords:  
+		#for word in seg_list:  
+	        	#if word not in stopwords:  
 	        	    	#if word != '\t':  
-	        		        result += word  
-	        		        result += "|"  
+	 		#result+= word
+	       # result+= "|"  
 				
-		#result = str("|".join(seg_list))
+		result = str("|".join(seg_list))
 		
 		result = re.sub('xx*','|',result)
 		result = re.sub('\|\|*','|',result)
