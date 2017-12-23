@@ -316,11 +316,11 @@ class Util_Classify_Message:
 InputTrainingFileName = 'training.txt'
 InputTestingFileName = 'testing.txt'
 c_Msg = Util_Classify_Message(InputTrainingFileName)
-c_Msg.Training(5)
+#c_Msg.Training(5)
 
-c_Msg.Train_Model()
+#c_Msg.Train_Model()
 c_Msg.LoadModel()
-c_Msg.GetResult(InputTestingFileName)
+#c_Msg.GetResult(InputTestingFileName)
 test = ['x强度等级水泥的必要性和可行性进行深入研究','.x月xx日推出凭证式国债x年期x.xx.xx%，x年期x.xx%到期一次还本付息。真情邮政，为您竭诚服务！  咨询电话xxxx-xx','庆xx节本会所优惠活动，为答谢新老顾客的支持与厚爱，，面部特卡:xxx元/xx次，身体活动，带脉减小肚腩:xxxx元/xx次，，肠胃','','']
 result = c_Msg.Predict(test)
 print(result)
