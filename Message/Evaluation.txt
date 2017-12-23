@@ -1,0 +1,7 @@
+Accuracy@all          0.977
+Persion@Normal        0.984
+Persion@Spam          0.907
+Recall@Normal         0.990
+Recall@Spam           0.858
+F1Score@Normal        0.987
+F1Score@Spam          0.881
