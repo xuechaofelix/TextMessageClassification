@@ -103,7 +103,7 @@ class Util_Feature_Extraction:
 		result_file = open(OutputFeature,"w") #
 
 		for k in info_gain_sorted[0:Num]:
-			result_file.write(str(k))
+			result_file.write(str(str(k).encode('utf-8')).strip())
 			result_file.write('\r\n')
 		result_file.flush()
 		result_file.close()
@@ -112,7 +112,7 @@ class Util_Feature_Extraction:
 
 		for k in info_gain_sorted:
 			#result = str(k)
-			all_result_file.write(str(k))
+			all_result_file.write(str(str(k).encode('utf-8')).strip())
 			all_result_file.write('\r\n')
 		all_result_file.flush()
 		all_result_file.close()
@@ -120,7 +120,7 @@ class Util_Feature_Extraction:
 
 	def GetFeature(self,train,NumOfFeature,outputfeaturefile,outputallfeaturefile):
 		info_gain = self.__CalculateInformationGain(train)
-		self.__OutPutFeature(info_gain,NumOfFeature,outputfeaturefile,outputallfeaturefile)
+		#self.__OutPutFeature(info_gain,NumOfFeature,outputfeaturefile,outputallfeaturefile)
 		feature = []
 		for k in info_gain[0:NumOfFeature]:
 			#print(k)

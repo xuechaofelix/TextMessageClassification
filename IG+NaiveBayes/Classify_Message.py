@@ -6,22 +6,26 @@ import WordSegmentation
 import FeatureExtraction
 import io
 from sklearn.metrics import *
+import csv
 
 class Util_Classify_Message:
 
 	InputTrainingFile = "training_result.txt"
-	InputTestingFile = "testing_result.txt"
-	InputOriginalTestingFile = "testing.txt"
 	OutPutResultFile = "testing_classify_result.txt"
+	ModelFile = 'Model.csv'
+	# InputTestingFile = "testing_result.txt"
+	InputOriginalTestingFile = "testing.txt"
 	OutputFeature = "feature.txt"
 	OutputAllFeature = "all_feature.txt"
 
 	NumOfFeature = 200#
 	E_p_base = 0.00000001#0.001
+	Py_0 = 0.0
+	Py_1 = 0.0
+	Pfeature = {}
 
-	def __init__(self,Training_file,Testing_file):
+	def __init__(self,Training_file):
 		self.InputTrainingFile = Training_file
-		self.InputTestingFile = Testing_file
 
 	def GetTraingData(self):
 		training_file = io.open(self.InputTrainingFile,'r',encoding = 'utf-8')
@@ -41,23 +45,20 @@ class Util_Classify_Message:
 		# 		print(' '),
 		# 	print('')
 		return tmp_train
-	def GetTestingData(self):
-		testing_file = open(self.InputTestingFile)
+	def GetTestingData(self,InputTestingFileName):
+		testing_file = io.open(InputTestingFileName,'r',encoding = 'utf-8')
 		test_result = []
 		for line in testing_file:
-			test_result.append(line.split('|'))
+			test_result .append(line)
+		w_seg = WordSegmentation.Util_WordSegmentation()
+		cut_test = w_seg.CutList(test_result)
+		tmp_test = []
+		for line in cut_test:
+			tmp_test.append(line.split('|'))
+			#print(line)
 		testing_file.close()
-		return test_result
-	def GetFeature(self):
-		feature_file = open(self.OutputFeature)
-		tmp_feature = []
-		for line in feature_file:
-			s = line.split(',')
-			s[0] = s[0][2:len(s[0])-1]
-			s[0] = s[0].strip()
-			tmp_feature.append(s[0])
-		feature_file.close()
-		return tmp_featrue
+
+		return tmp_test
 
 	def Training(self,fold):
 		print("Evaluate the model by "+str(fold)+"-fold(it will cost some time to training the model)......\n")
@@ -138,30 +139,30 @@ class Util_Classify_Message:
 					Result.append(1)
 				elif line[0] == '0':
 					Result.append(0)
-				'''
-				if (current_P1 >= current_P0 and line[0] == '1'):
-					TN +=1
-				elif (current_P1 < current_P0 and line[0] == '0'):
-					TP += 1
-				elif (current_P1 >= current_P0 and line[0] == '0'):
-					FN += 1
-				elif (current_P1 < current_P0 and line[0] == '1'):
-					FP += 1
-				else:
-					print("error result")
-					'''
-				'''
-				if (current_P1 >= current_P0 and line[0] == '1'):
-					TP +=1
-				elif (current_P1 < current_P0 and line[0] == '0'):
-					TN += 1
-				elif (current_P1 >= current_P0 and line[0] == '0'):
-					FP += 1
-				elif (current_P1 < current_P0 and line[0] == '1'):
-					FN += 1
-				else:
-					print("error result")
-				'''
+				# '''
+				# if (current_P1 >= current_P0 and line[0] == '1'):
+				# 	TN +=1
+				# elif (current_P1 < current_P0 and line[0] == '0'):
+				# 	TP += 1
+				# elif (current_P1 >= current_P0 and line[0] == '0'):
+				# 	FN += 1
+				# elif (current_P1 < current_P0 and line[0] == '1'):
+				# 	FP += 1
+				# else:
+				# 	print("error result")
+				# 	'''
+				# '''
+				# if (current_P1 >= current_P0 and line[0] == '1'):
+				# 	TP +=1
+				# elif (current_P1 < current_P0 and line[0] == '0'):
+				# 	TN += 1
+				# elif (current_P1 >= current_P0 and line[0] == '0'):
+				# 	FP += 1
+				# elif (current_P1 < current_P0 and line[0] == '1'):
+				# 	FN += 1
+				# else:
+				# 	print("error result")
+				# '''
 			#print("Right is"+ str((TP+TN)/(TP+TN+FP+FN)))
 			Evaluation = precision_recall_fscore_support(Result,Evaluation_Result,pos_label = 1)
 			Accuracy = accuracy_score(Result,Evaluation_Result)
@@ -184,8 +185,35 @@ class Util_Classify_Message:
 		print("recall is "+ str(recall/5))
 		print("F1 is " + str(F1/5)+"\n")
 
-	def GetResult(self):
-		util_feature = Feature()
+	def StoreModel(self,Py_0,Py_1,Pfeature):
+		csvFile = open(self.ModelFile,'w')
+		writer = csv.writer(csvFile)
+		writer.writerow([Py_0,Py_1])
+		for key in Pfeature:
+			writer.writerow([key, Pfeature[key]])
+		csvFile.close()
+	def LoadModel(self):
+		print("Now, It is starting loding the model")
+		csvFile = open(self.ModelFile,'r')
+		reader = csv.reader(csvFile)
+		result = []
+		for item in reader:
+			result.append(item)
+		self.Py_0 = float(result[0][0])
+		self.Py_1 = float(result[0][1])
+		for line in result[1:len(result)]:
+			string = line[1][1:len(line[1])-1]
+			feature_weight = [0.0,0.0]
+			feature_weight[0] = float(string.split(',')[0])
+			feature_weight[1] = float(string.split(',')[1])
+		#	print(string)
+			self.Pfeature.setdefault(line[0],feature_weight)
+		# for key in self.Pfeature:
+		# 	print(self.Pfeature[key])
+		print("Loding Model is Down!!!")
+	def Train_Model(self):
+		print("Now, It is training all of this set!")
+		util_feature = FeatureExtraction.Util_Feature_Extraction()
 
 		train = self.GetTraingData()
 		Py_0 = 0.0
@@ -208,28 +236,34 @@ class Util_Classify_Message:
 		for line in tmp_train:
 			if line[0] == '0':
 
-				for col in line[1:len(line)-1]:
+				for col in line[1:len(line)]:
 
 					if col in Pfeature :
 						Py_0 +=1
 						Pfeature[col][1] += 1
 			if line[0] == '1':
 
-				for col in line[1:len(line)-1]:
+				for col in line[1:len(line)]:
 
 					if col in Pfeature:
 						Py_1 +=1
 						Pfeature[col][0] += 1
+		self.StoreModel(Py_0,Py_1,Pfeature)
+		print("Training all the set is down, The model is kept in the "+ self.ModelFile)
 
-		test = self.GetTestingData()
+	def GetResult(self,InputTestingFileName):
+		test = self.GetTestingData(InputTestingFileName)
+		Py_1 = self.Py_1
+		Py_0 = self.Py_0
+		Pfeature = self.Pfeature
 		for line in test:
-			current_P1 = (Py_1/(Py_0+Py_1))
-			current_P0 = (Py_0/(Py_0+Py_1))
+			current_P1 = math.log(Py_1/(Py_0+Py_1),10)
+			current_P0 = math.log(Py_0/(Py_0+Py_1),10)
 
 			for f in Pfeature:
-				if f in line[1:len(line)-1]:
-					current_P1 *= Pfeature[f][0]/Py_1
-					current_P0 *= Pfeature[f][1]/Py_0
+				if f in line[1:len(line)]:
+					current_P1 += math.log(1.25*Pfeature[f][0]/Py_1,10)
+					current_P0 += math.log(2*Pfeature[f][1]/Py_0,10)
 			#for col in line[1:len(line)-1]:
 				#if col in Pfeature:
 					#current_P1 *= Pfeature[col][0]/Py_1
@@ -253,7 +287,40 @@ class Util_Classify_Message:
 		all_result_file.flush()
 		all_result_file.close()
 
+
+	def Predict(self,testing):
+		Py_1 = self.Py_1
+		Py_0 = self.Py_0
+		Pfeature = self.Pfeature
+		Result = []
+		w_seg = WordSegmentation.Util_WordSegmentation()
+		test = w_seg.CutList(testing)
+		for line in test:
+			current_P1 = math.log(Py_1/(Py_0+Py_1),10)
+			current_P0 = math.log(Py_0/(Py_0+Py_1),10)
+			for f in Pfeature:
+				if f in line[1:len(line)]:
+					current_P1 += math.log(1.25*Pfeature[f][0]/Py_1,10)
+					current_P0 += math.log(2*Pfeature[f][1]/Py_0,10)
+			#for col in line[1:len(line)-1]:
+				#if col in Pfeature:
+					#current_P1 *= Pfeature[col][0]/Py_1
+					#current_P0 *= Pfeature[col][1]/Py_0
+			if (current_P1 >= current_P0 ):
+				Result.append(1)
+			elif (current_P1 < current_P0):
+				Result.append(0)
+		return Result
+
+
 InputTrainingFileName = 'training.txt'
 InputTestingFileName = 'testing.txt'
-c_Msg = Util_Classify_Message(InputTrainingFileName,InputTestingFileName)
+c_Msg = Util_Classify_Message(InputTrainingFileName)
 c_Msg.Training(5)
+
+c_Msg.Train_Model()
+c_Msg.LoadModel()
+c_Msg.GetResult(InputTestingFileName)
+test = ['x强度等级水泥的必要性和可行性进行深入研究','.x月xx日推出凭证式国债x年期x.xx.xx%，x年期x.xx%到期一次还本付息。真情邮政，为您竭诚服务！  咨询电话xxxx-xx','庆xx节本会所优惠活动，为答谢新老顾客的支持与厚爱，，面部特卡:xxx元/xx次，身体活动，带脉减小肚腩:xxxx元/xx次，，肠胃','','']
+result = c_Msg.Predict(test)
+print(result)

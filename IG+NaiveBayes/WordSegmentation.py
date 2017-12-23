@@ -7,7 +7,7 @@ import re
 class Util_WordSegmentation:
 
 	def CutList(self,list):
-		out_file = open('output_word_file.txt','w')
+	#	out_file = open('output_word_file.txt','w')
 		Result = []
 		for line in list:
 			#print(line)
@@ -26,13 +26,13 @@ class Util_WordSegmentation:
 				result = result[1:len(result)]
 			result = result.strip()
 			#print(result)
-			out_file.write(result+'\r\n')
+			#out_file.write(result+'\r\n')
 			Result.append(result)
 		# for line in Result:
 		# 	print(line)
 		# print(Result)
-		out_file.flush()
-		out_file.close()
+		#out_file.flush()
+		#out_file.close()
 		print("Word Segmentation is down!!!\n")
 		return Result
 
